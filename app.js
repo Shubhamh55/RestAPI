@@ -4,9 +4,9 @@ const connect = require('./db');
 const seed = require('./seed');
 const app = express();
 
-function createOrArray(query) {
-    if (query.$or == undefined) {
-        query.$or = [];
+function createFilterArray(query) {
+    if (query.$and == undefined) {
+        query.$and = [];
     }
 }
 
@@ -22,32 +22,32 @@ app.get('/list', async (req, res) => {
 
     // Separating movies and TV shows
     if (req.query.type) {
-        createOrArray(query)
-        query.$or.push({ type: req.query.type });
+        createFilterArray(query)
+        query.$and.push({ type: req.query.type });
     }
 
     // Searching with movie name
     if (req.query.name) {
-        createOrArray(query)
-        query.$or.push({ title: { $regex: req.query.name, $options: 'i' } });
+        createFilterArray(query)
+        query.$and.push({ title: { $regex: req.query.name, $options: 'i' } });
     }
 
     // Searching with movie director
     if (req.query.director) {
-        createOrArray(query)
-        query.$or.push({ director: { $regex: req.query.director, $options: 'i' } });
+        createFilterArray(query)
+        query.$and.push({ director: { $regex: req.query.director, $options: 'i' } });
     }
 
     // Searching with movie cast
     if (req.query.cast) {
-        createOrArray(query)
-        query.$or.push({ cast: { $regex: req.query.cast, $options: 'i' } });
+        createFilterArray(query)
+        query.$and.push({ cast: { $regex: req.query.cast, $options: 'i' } });
     }
 
     // Range queries on release_year
     if (req.query.startYear && req.query.endYear) {
-        createOrArray(query)
-        query.$or.push({
+        createFilterArray(query)
+        query.$and.push({
             release_year: {
                 $gte: req.query.startYear,
                 $lte: req.query.endYear
@@ -58,8 +58,8 @@ app.get('/list', async (req, res) => {
 
     // Filter by rating
     if (req.query.rating) {
-        createOrArray(query)
-        query.$or.push({ rating: req.query.rating });
+        createFilterArray(query)
+        query.$and.push({ rating: req.query.rating });
     }
 
 
